@@ -1,0 +1,94 @@
+<head>
+    <meta charset="UTF-8" />
+    <title>홈</title>
+    <style>
+        body { margin:0; font-family:system-ui, sans-serif; background:linear-gradient(135deg,#cfe6ff,#d7f1f1); }
+        .layout { display:flex; gap:24px; align-items:flex-start; padding:0 24px 24px; margin-top: 40px }
+        .content { flex:1;}
+
+        /* 배너 제목 중앙 */
+        .banner { padding:48px 24px 32px; text-align:center; }
+        .banner h1 { margin:0; font-weight:800; font-size:48px; letter-spacing:1px; }
+
+        /* 정렬 + 새 글 같은 줄 */
+        .top-bar {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin:0 0 16px;
+        }
+        .sort-options {
+            display:flex;
+            gap:16px;
+            font-size:18px;
+        }
+        .sort-link { color:#111; text-decoration:none; }
+        .sort-link:hover { text-decoration:underline; }
+        .divider { opacity:.5; }
+
+        .primary-btn {
+            padding:8px 12px;
+            border:1px solid #cfd8e3;
+            border-radius:999px;
+            background:#fff;
+            color:#111;
+            text-decoration:none;
+        }
+
+        /* 썸네일 3x2 */
+        .grid {
+            display:grid;
+            grid-template-columns:repeat(3, minmax(0,1fr));
+            gap:16px;
+            justify-content: center;
+        }
+        .card {
+            background:#fff;
+            border:1px solid #cfd8e3;
+            border-radius:12px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            aspect-ratio:1/1; /* 정사각형 */
+            max-width: 600px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 배너 -->
+<header class="banner">
+    <h1>Welcome to my blog</h1>
+</header>
+
+<div class="layout">
+    <!-- 사이드바 -->
+    <div th:replace="mainPage/sidebar :: sidebarFragment"></div>
+
+    <!-- 메인 -->
+    <main class="content">
+
+        <!-- 정렬 + 새 글 -->
+        <div class="top-bar">
+            <div class="sort-options">
+                <a class="sort-link" th:href="@{/posts(sort='latest')}">최신 순</a>
+                <span class="divider">|</span>
+                <a class="sort-link" th:href="@{/posts(sort='views')}">조회 수 많은 순</a>
+            </div>
+            <a class="primary-btn" th:href="@{/posting}">새 글 작성</a>
+        </div>
+
+        <!-- 썸네일 3x2 -->
+        <div class="grid">
+            <div class="card">썸네일</div>
+            <div class="card">썸네일</div>
+            <div class="card">썸네일</div>
+            <div class="card">썸네일</div>
+            <div class="card">썸네일</div>
+            <div class="card">썸네일</div>
+        </div>
+
+    </main>
+</div>
+</body>

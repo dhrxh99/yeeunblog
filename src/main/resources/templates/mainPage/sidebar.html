@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="sidebarFragment">
+    <aside style="width:280px; padding:16px; border:1px solid #cfd8e3; border-radius:12px;">
+        <!-- 프로필 박스 (로그인 제거 버전: 고정 표시) -->
+        <section style="border:1px solid #cfd8e3; border-radius:12px; padding:16px; margin-bottom:16px;">
+            <h3 style="margin:0 0 12px;">프로필</h3>
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div style="width:56px; height:56px; border-radius:50%; background:#e8eef7;"></div>
+                <div>
+                    <div style="font-weight:600;">방문자</div>
+                    <small>내 정보 보기(준비중)</small>
+                </div>
+            </div>
+        </section>
+
+        <!-- 게시판 이동 -->
+        <section style="border:1px solid #cfd8e3; border-radius:12px; padding:16px;">
+            <h3 style="margin:0 0 12px;">게시판 카테고리</h3>
+            <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px;">
+                <li><a th:href="@{/it}">IT</a></li>
+                <li><a th:href="@{/japanese}">일본어</a></li>
+            </ul>
+        </section>
+    </aside>
+</div>
+</body>
+</html>
