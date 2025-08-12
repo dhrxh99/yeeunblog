@@ -9,6 +9,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "comments")
@@ -23,10 +25,16 @@ public class Comment {
     @GeneratedValue
     private Long id;
 
-    @Column
     private String author;
 
-    @Column
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Comment parent;
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = false)
+    private List<Comment> children = new ArrayList<>();
+
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
     @CreatedDate
@@ -36,5 +44,7 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "post_id")
     private StudyPost post;
+
+    private int depth; // parent가 있으면 parent.depth + 1
 
 }

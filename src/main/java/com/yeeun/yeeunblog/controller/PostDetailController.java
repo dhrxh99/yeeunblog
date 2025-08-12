@@ -61,6 +61,39 @@ public class PostDetailController {
         return "redirect:/post/" + postId + "#comments";
     }
 
+    @PostMapping("/post/{postId}/comments")
+    public String addComment(@PathVariable Long postId,
+                             @RequestParam(value = "parentId", required = false) Long parentId,
+                             @RequestParam("content") String content) {
+
+        if (content == null || content.trim().isEmpty()) {
+            return "redirect:/post/" + postId + "#comments";
+        }
+
+        StudyPost post = studyPostRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글 없음: " + postId));
+
+        Comment c = new Comment();
+        c.setPost(post);
+        c.setAuthor(/* 익명 카운터 로직 or "익명" */ "익명");
+        c.setContent(content.trim());
+
+        if (parentId != null) {
+            Comment parent = commentRepository.findById(parentId)
+                    .orElseThrow(() -> new IllegalArgumentException("부모 댓글 없음: " + parentId));
+            // 안전 체크: 부모 댓글이 같은 글에 속하는지
+            if (!parent.getPost().getId().equals(postId)) {
+                throw new IllegalArgumentException("부모 댓글/게시글 불일치");
+            }
+            c.setParent(parent);
+            c.setDepth(parent.getDepth() + 1);
+        } else {
+            c.setDepth(0);
+        }
+
+        commentRepository.save(c);
+        return "redirect:/post/" + postId + "#comments";
+    }
 
 
 
