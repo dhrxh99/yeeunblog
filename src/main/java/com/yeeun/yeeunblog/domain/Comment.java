@@ -15,8 +15,7 @@ import java.util.List;
 @Entity
 @Table(name = "comments")
 @EntityListeners(AuditingEntityListener.class)
-@Getter
-@Setter
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Comment {
@@ -25,6 +24,7 @@ public class Comment {
     @GeneratedValue
     private Long id;
 
+    @Column(nullable = false, length = 50)
     private String author;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -45,6 +45,8 @@ public class Comment {
     @JoinColumn(name = "post_id")
     private StudyPost post;
 
-    private int depth; // parent가 있으면 parent.depth + 1
+    @Column(nullable = false)
+    private int depth = 0;
+    // parent가 있으면 parent.depth + 1, 없으면 0
 
 }

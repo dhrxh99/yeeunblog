@@ -21,8 +21,9 @@ public class PostDetailController {
     private final StudyPostRepository  studyPostRepository;
     private final CommentRepository commentRepository;
 
-    @GetMapping("/post/{id}") // 상세 페이지 + 댓글 조회
-    public String addCommentPost (@PathVariable Long id, Model model) {
+    // 상세 페이지 + 댓글 조회
+    @GetMapping("/post/{id}")
+    public String viewPost (@PathVariable Long id, Model model) {
 
         StudyPost post = studyPostRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다." + id));
@@ -37,8 +38,10 @@ public class PostDetailController {
         return "studyPostPage/PostDetailPage";
     }
 
-    @PostMapping("/post/{postId}/comments") // 상세 페이지에 댓글을 작성하는 로직
+    // 상세 페이지에 댓글/ 대댓글 작성하는 (통합)
+    @PostMapping("/post/{postId}/comments")
     public String comment (@PathVariable Long postId,
+                           @RequestParam(value = "parentId", required = false) Long parentId,
                            @RequestParam("content") String content) {
 
         if (content == null || content.trim().isEmpty()) {
@@ -54,47 +57,24 @@ public class PostDetailController {
 
         Comment comment = new Comment();
         comment.setPost(post);
+        comment.setAuthor(generatedAuthor);
         comment.setContent(content.trim());
-        // createdAt은 @CreatedDate로 자동 주입된다면 OK (아래 참고)
-        commentRepository.save(comment);
-
-        return "redirect:/post/" + postId + "#comments";
-    }
-
-    @PostMapping("/post/{postId}/comments")
-    public String addComment(@PathVariable Long postId,
-                             @RequestParam(value = "parentId", required = false) Long parentId,
-                             @RequestParam("content") String content) {
-
-        if (content == null || content.trim().isEmpty()) {
-            return "redirect:/post/" + postId + "#comments";
-        }
-
-        StudyPost post = studyPostRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시글 없음: " + postId));
-
-        Comment c = new Comment();
-        c.setPost(post);
-        c.setAuthor(/* 익명 카운터 로직 or "익명" */ "익명");
-        c.setContent(content.trim());
 
         if (parentId != null) {
             Comment parent = commentRepository.findById(parentId)
                     .orElseThrow(() -> new IllegalArgumentException("부모 댓글 없음: " + parentId));
-            // 안전 체크: 부모 댓글이 같은 글에 속하는지
             if (!parent.getPost().getId().equals(postId)) {
                 throw new IllegalArgumentException("부모 댓글/게시글 불일치");
             }
-            c.setParent(parent);
-            c.setDepth(parent.getDepth() + 1);
+            comment.setParent(parent);
+            comment.setDepth(parent.getDepth() + 1);
         } else {
-            c.setDepth(0);
+            comment.setDepth(0);
         }
 
-        commentRepository.save(c);
+        commentRepository.save(comment);
+
         return "redirect:/post/" + postId + "#comments";
     }
-
-
 
 }
