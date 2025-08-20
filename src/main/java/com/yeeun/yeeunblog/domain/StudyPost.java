@@ -19,8 +19,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class StudyPost {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id // 해당 필드가 pk 라고 선언
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // pk 값을 생성하는 방법
     private Long id;
 
     private String title;
