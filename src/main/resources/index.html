@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>레이아웃 샘플</title>
+  <!-- ⚠️ CSS는 반드시 별도 파일로 분리해 둡니다 -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- 헤더 -->
+  <header class="site-header">
+    <div class="header__inner">
+      <h1 class="logo">My Blog</h1>
+      <nav class="nav">
+        <a href="#" class="nav__link">홈</a>
+        <a href="#" class="nav__link">글쓰기</a>
+        <a href="#" class="nav__link">소개</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 메인 컨테이너 -->
+  <main class="container">
+    <!-- 툴바(카테고리/필터 등) -->
+    <section class="toolbar" aria-label="카테고리 필터">
+      <button class="pill is-active" type="button">전체</button>
+      <button class="pill" type="button">IT</button>
+      <button class="pill" type="button">일본어</button>
+      <button class="pill" type="button">일상</button>
+    </section>
+
+    <!-- 카드(박스) 그리드 -->
+    <section class="grid" aria-label="콘텐츠 목록">
+      <!-- ✅ 필요 개수만큼 이 .card 블록을 복제해서 쓰면 됩니다 -->
+      <article class="card">
+        <h2 class="card__title">박스 1</h2>
+        <p class="card__desc">여기에 요약이나 설명이 들어갑니다.</p>
+      </article>
+
+      <article class="card">
+        <h2 class="card__title">박스 2</h2>
+        <p class="card__desc">여기에 요약이나 설명이 들어갑니다.</p>
+      </article>
+
+      <article class="card">
+        <h2 class="card__title">박스 3</h2>
+        <p class="card__desc">여기에 요약이나 설명이 들어갑니다.</p>
+      </article>
+
+      <article class="card">
+        <h2 class="card__title">박스 4</h2>
+        <p class="card__desc">여기에 요약이나 설명이 들어갑니다.</p>
+      </article>
+
+      <article class="card">
+        <h2 class="card__title">박스 5</h2>
+        <p class="card__desc">여기에 요약이나 설명이 들어갑니다.</p>
+      </article>
+
+      <article class="card">
+        <h2 class="card__title">박스 6</h2>
+        <p class="card__desc">여기에 요약이나 설명이 들어갑니다.</p>
+      </article>
+    </section>
+  </main>
+
+  <!-- 푸터 -->
+  <footer class="site-footer">
+    <small>© 2025 My Blog</small>
+  </footer>
+</body>
+</html>
