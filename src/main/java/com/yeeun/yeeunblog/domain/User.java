@@ -20,5 +20,9 @@ public class User {
     private Long id;
 
     @Column
+    private String name;
+    @Column
+    private String email;
+    @Column
     private char password;
 }
