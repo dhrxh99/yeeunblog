@@ -8,7 +8,10 @@ import com.yeeun.yeeunblog.util.SortUtil;
 import com.yeeun.yeeunblog.util.ThumbnailUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -38,19 +41,14 @@ public class PostApiController {
 
     // 단건 조회
     @GetMapping("/{id}")
-    public PostResponse get(@PathVariable Long id) {
+    public ResponseEntity<PostResponse> get(@PathVariable Long id) {
         StudyPost post = postRepo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("post not found: " + id));
-        return toDto(post);
-    }
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "post not found: " + id));
 
-    // 조회수 +1 (선택)
-    @PostMapping("/{id}/view")
-    public void addView(@PathVariable Long id) {
-        StudyPost post = postRepo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("post not found: " + id));
         post.setViewCount(post.getViewCount() + 1);
         postRepo.save(post);
+
+        return ResponseEntity.ok(toDto(post));
     }
 
     // 새 게시글 저장
@@ -91,8 +89,13 @@ public class PostApiController {
 
     private PostResponse toDto(StudyPost p) {
         return new PostResponse(
-                p.getId(), p.getTitle(), p.getContent(), p.getCategory(), p.getThumbnail(),
-                p.getCreatedAt(), p.getViewCount()
+                p.getId(),
+                p.getTitle(),
+                p.getContent(),
+                p.getCategory(),
+                p.getThumbnail(),
+                p.getCreatedAt(),
+                p.getViewCount()
         );
     }
 }
