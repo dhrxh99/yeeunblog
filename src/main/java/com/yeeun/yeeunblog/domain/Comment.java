@@ -21,11 +21,14 @@ import java.util.List;
 public class Comment {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, length = 50)
     private String author;
+
+    @Column(nullable = false, length = 50)
+    private String password;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
@@ -46,7 +49,6 @@ public class Comment {
     private StudyPost post;
 
     @Column(nullable = false)
-    private int depth = 0;
-    // parent가 있으면 parent.depth + 1, 없으면 0
+    private int depth = 0; // 들여쓰기 단계 관리
 
 }

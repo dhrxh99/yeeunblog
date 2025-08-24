@@ -13,8 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "study_posts")
 @EntityListeners(AuditingEntityListener.class)
-@Getter
-@Setter
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class StudyPost {
@@ -23,10 +22,10 @@ public class StudyPost {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // pk 값을 생성하는 방법
     private Long id;
 
+    private String category;
     private String title;
     @Column(columnDefinition = "TEXT")
     private String content;
-    private String category;
 
     @CreatedDate
     @Column(updatable = true)
@@ -37,5 +36,8 @@ public class StudyPost {
 
     @Column
     private String thumbnail;
+
+    private String author;
+    private String password;
 
 }
