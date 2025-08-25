@@ -39,5 +39,4 @@ public class StudyPost {
 
     private String author;
     private String password;
-
 }

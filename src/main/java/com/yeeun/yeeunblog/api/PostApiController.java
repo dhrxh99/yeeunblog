@@ -3,15 +3,13 @@ package com.yeeun.yeeunblog.api;
 
 import com.yeeun.yeeunblog.api.dto.*;
 import com.yeeun.yeeunblog.domain.StudyPost;
-import com.yeeun.yeeunblog.repository.StudyPostRepository;
+import com.yeeun.yeeunblog.service.StudyPostService;
 import com.yeeun.yeeunblog.util.SortUtil;
 import com.yeeun.yeeunblog.util.ThumbnailUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -20,7 +18,7 @@ import java.util.List;
 @RequestMapping("/api/posts")
 public class PostApiController {
 
-    private final StudyPostRepository postRepo;
+    private final StudyPostService postService;
 
     // 게시글 정렬
     @GetMapping
@@ -31,60 +29,52 @@ public class PostApiController {
             @RequestParam(defaultValue = "9") int size
     ) {
         Pageable pageable = PageRequest.of(page, size, SortUtil.resolveSort(sort));
-        Page<StudyPost> p = (category == null || category.isBlank())
-                ? postRepo.findAll(pageable)
-                : postRepo.findByCategoryIgnoreCase(category, pageable);
+        Page<StudyPost> p = postService.getSortedPostsByCategory(category, pageable);
 
         List<PostResponse> items = p.getContent().stream().map(this::toDto).toList();
         return new PostPageResponse(items, p.getNumber(), p.getTotalPages(), p.getTotalElements());
     }
 
-    // 단건 조회
+    // 조회
     @GetMapping("/{id}")
-    public ResponseEntity<PostResponse> get(@PathVariable Long id) {
-        StudyPost post = postRepo.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "post not found: " + id));
-
-        post.setViewCount(post.getViewCount() + 1);
-        postRepo.save(post);
-
-        return ResponseEntity.ok(toDto(post));
+    public PostResponse get(@PathVariable Long id) {
+        return toDto(postService.getPost(id));
     }
 
-    // 새 게시글 저장
+    // 새 게시글 작성
     @PostMapping
     public PostResponse create(@RequestBody CreatePostRequest req) {
-        if (req.title() == null || req.title().isBlank() ||
-                req.content() == null || req.content().isBlank()) {
-            throw new IllegalArgumentException("title/content required");
-        }
         StudyPost post = new StudyPost();
+
         post.setTitle(req.title());
         post.setContent(req.content());
         post.setCategory(req.category());
         post.setViewCount(0);
-        post.setThumbnail(ThumbnailUtil.firstImg(req.content())); // ✅ 첫 이미지 추출
+        post.setThumbnail(ThumbnailUtil.firstImg(req.content())); // 첫 이미지 추출
+        post.setAuthor(req.author());
+        post.setPassword(req.password());
 
-        StudyPost saved = postRepo.save(post);
-        return toDto(saved);
+        return toDto(postService.createPost(post));
     }
 
     // 수정
     @PutMapping("/{id}")
     public PostResponse update(@PathVariable Long id, @RequestBody UpdatePostRequest req) {
-        StudyPost post = postRepo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("post not found: " + id));
-        post.setTitle(req.title());
-        post.setContent(req.content());
-        post.setCategory(req.category());
-        post.setThumbnail(ThumbnailUtil.firstImg(req.content()));
-        return toDto(postRepo.save(post));
+        StudyPost updated = postService.updatePost(
+                id,
+                req.title(),
+                req.content(),
+                req.category(),
+                req.password()
+        );
+        return toDto(updated);
     }
 
     // 삭제
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        postRepo.deleteById(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id, @RequestBody DeletePostRequest req) {
+        postService.deletePost(id, req.password());
+        return ResponseEntity.noContent().build();
     }
 
     private PostResponse toDto(StudyPost p) {
