@@ -7,6 +7,7 @@ public record PostResponse(
         String title,
         String content,
         String category,
+        String author,
         String thumbnail,
         LocalDateTime createdAt,
         long viewCount

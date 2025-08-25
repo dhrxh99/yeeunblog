@@ -83,6 +83,7 @@ public class PostApiController {
                 p.getTitle(),
                 p.getContent(),
                 p.getCategory(),
+                p.getAuthor(),
                 p.getThumbnail(),
                 p.getCreatedAt(),
                 p.getViewCount()

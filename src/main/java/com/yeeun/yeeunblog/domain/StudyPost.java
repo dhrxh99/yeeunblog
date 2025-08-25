@@ -37,6 +37,8 @@ public class StudyPost {
     @Column
     private String thumbnail;
 
+    @Column(nullable = false, length = 50)
     private String author;
+    @Column(nullable = false, length = 4)
     private String password;
 }
