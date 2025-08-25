@@ -27,9 +27,16 @@ public class CommentService {
         return list.stream().map(this::toDto).toList();
     }
 
+    private void validatePassword(String password) {
+        if (password == null || !password.matches("\\d{4}")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호는 4자리 숫자여야 합니다.");
+        }
+    }
+
     public CommentResponse create(Long postId, CreateCommentRequest req) {
+        validatePassword(req.password());
         StudyPost post = postRepo.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("post not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."));
 
         Comment c = new Comment();
         c.setPost(post);
@@ -39,10 +46,10 @@ public class CommentService {
 
         if (req.parentId() != null) {
             Comment parent = commentRepo.findById(req.parentId())
-                    .orElseThrow(() -> new IllegalArgumentException("parent not found"));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "parent not found"));
 
             if (!parent.getPost().getId().equals(postId)) {
-                throw new IllegalArgumentException("parent/post mismatch");
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "parent/post mismatch");
             }
             c.setParent(parent);
             c.setDepth(parent.getDepth() + 1);
@@ -53,11 +60,12 @@ public class CommentService {
     }
 
     public CommentResponse update(Long postId, Long commentId, UpdateCommentRequest req) {
+        validatePassword(req.password());
         Comment c = commentRepo.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("comment not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "comment not found"));
 
         if (!c.getPost().getId().equals(postId)) {
-            throw new IllegalArgumentException("post mismatch");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "post mismatch");
         }
 
         if (!req.password().equals(c.getPassword())) {
@@ -69,11 +77,12 @@ public class CommentService {
     }
 
     public void delete(Long postId, Long commentId, DeleteCommentRequest req) {
+        validatePassword(req.password());
         Comment c = commentRepo.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("comment not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "comment not found"));
 
         if (!c.getPost().getId().equals(postId)) {
-            throw new IllegalArgumentException("post mismatch");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "post mismatch");
         }
 
         // 비밀번호 검증
